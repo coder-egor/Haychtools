@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>HaychTools Hub</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -18,35 +19,39 @@
       overflow-x:hidden;
     }
 
-    /* Canvases for hub animations */
-    #waves, #particles {
+    /* Canvases */
+    #waves, #particles, #dots-canvas {
       position:fixed;
       top:0; left:0;
       width:100%; height:100%;
       z-index:-2;
+      pointer-events:none;
     }
     #particles { z-index:-1; }
+    #dots-canvas { display:none; z-index:0; }
 
-    /* Hub - original cyber style */
+    /* Hub - centered title */
     #hub {
       position:relative;
       z-index:1;
-      height:100vh;
+      min-height:100vh;
       display:flex;
       flex-direction:column;
       align-items:center;
       justify-content:center;
       text-align:center;
-      padding:20px;
+      padding:40px 20px;
     }
     #hub h1 {
       font-family:'Rubik Puddles',cursive;
-      font-size:clamp(50px, 10vw, 80px);
-      margin-bottom:60px;
+      font-size:clamp(50px, 12vw, 90px);
+      margin:0 auto 60px;
       background:linear-gradient(90deg,#00f0ff,#00ff9d,#6a5cff);
       -webkit-background-clip:text;
       -webkit-text-fill-color:transparent;
       filter:drop-shadow(0 0 25px rgba(0,255,200,0.6));
+      text-align:center;
+      max-width:90%;
     }
     .container {
       display:flex;
@@ -69,24 +74,17 @@
     .bot { background:linear-gradient(135deg,#2979ff,#00b0ff); box-shadow:0 0 20px #2979ff; }
     .btn:hover { transform:scale(1.1); filter:brightness(1.2); }
 
-    /* Dots canvas for Game Copier only */
-    #dots-canvas {
-      position:fixed;
-      top:0; left:0;
-      width:100%; height:100%;
-      z-index:0;
-      pointer-events:none;
-      display:none; /* hidden until game section */
-    }
-
-    /* Game Copier section - clean dark iOS vibe */
+    /* Game Copier - everything centered */
     #game {
       display:none;
       position:relative;
       z-index:1;
       min-height:100vh;
       padding:80px 20px 40px;
-      text-align:center;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
     }
     .back-btn {
       position:absolute;
@@ -106,19 +104,21 @@
     .back-btn::before { content:"←"; font-size:24px; }
     .game-content {
       max-width:520px;
-      margin:0 auto;
+      width:100%;
       background:rgba(15,15,25,0.85);
       backdrop-filter:blur(12px);
       border-radius:28px;
       padding:40px 28px;
       border:1px solid rgba(255,255,255,0.06);
       box-shadow:0 20px 80px rgba(0,0,0,0.7);
+      text-align:center;
     }
     .game-content h1 {
-      font-size:clamp(32px, 7vw, 44px);
-      margin-bottom:24px;
+      font-size:clamp(32px, 8vw, 48px);
+      margin:0 auto 24px;
       font-weight:600;
       color:#fff;
+      text-align:center;
     }
     .game-content p {
       font-size:15px;
@@ -182,9 +182,7 @@
       cursor:pointer;
       transition:0.3s;
     }
-    .tutorial-btn:hover {
-      background:rgba(255,255,255,0.14);
-    }
+    .tutorial-btn:hover { background:rgba(255,255,255,0.14); }
     .play-icon {
       width:28px;
       height:28px;
@@ -204,7 +202,6 @@
   <canvas id="particles"></canvas>
   <canvas id="dots-canvas"></canvas>
 
-  <!-- Hub - original flashy design -->
   <div id="hub">
     <h1>HaychTools Hub</h1>
     <div class="container">
@@ -214,8 +211,7 @@
     </div>
   </div>
 
-  <!-- Game Copier - your requested dark clean design -->
-  <div id="game" class="section">
+  <div id="game">
     <button class="back-btn" onclick="showSection('hub')">Back</button>
     <div class="game-content">
       <h1>Copy Games</h1>
@@ -237,32 +233,35 @@
     </div>
   </div>
 
-  <!-- Placeholder for other sections -->
+  <!-- Other sections placeholders -->
   <div id="clothes" class="section" style="display:none;">
     <button class="back-btn" onclick="showSection('hub')">Back</button>
-    <h1>Clothes Copier</h1>
-    <p>Ready when you are - drop the real juice here.</p>
+    <div style="max-width:520px; text-align:center;">
+      <h1>Clothes Copier</h1>
+      <p>Coming soon.</p>
+    </div>
   </div>
 
   <div id="bot" class="section" style="display:none;">
     <button class="back-btn" onclick="showSection('hub')">Back</button>
-    <h1>Bot Follower</h1>
-    <p>Bot setup incoming - tell me what you need.</p>
+    <div style="max-width:520px; text-align:center;">
+      <h1>Bot Follower</h1>
+      <p>Coming soon.</p>
+    </div>
   </div>
 
   <script>
     function showSection(id) {
-      document.querySelectorAll('#hub, .section').forEach(el => el.style.display = 'none');
+      document.querySelectorAll('#hub, #game, #clothes, #bot').forEach(el => el.style.display = 'none');
       document.getElementById(id).style.display = 'block';
 
-      // Dots only on game section
       document.getElementById('dots-canvas').style.display = (id === 'game') ? 'block' : 'none';
       if (id === 'game') initDots();
 
       window.scrollTo(0, 0);
     }
 
-    // Original hub wave animation
+    // Hub waves (unchanged)
     const waveCanvas = document.getElementById("waves");
     const wctx = waveCanvas.getContext("2d");
     waveCanvas.width = window.innerWidth;
@@ -285,7 +284,7 @@
     }
     drawWaves();
 
-    // Original hub particle trail
+    // Hub particles (unchanged)
     const pCanvas = document.getElementById("particles");
     const pctx = pCanvas.getContext("2d");
     pCanvas.width = window.innerWidth;
@@ -311,16 +310,14 @@
         pctx.beginPath();
         pctx.arc(p.x,p.y,p.size,0,Math.PI*2);
         pctx.fill();
-        p.x+=p.vx;
-        p.y+=p.vy;
-        p.life--;
+        p.x+=p.vx; p.y+=p.vy; p.life--;
         if(p.life<=0) particles.splice(i,1);
       }
       requestAnimationFrame(drawParticles);
     }
     drawParticles();
 
-    // White dots for Game Copier
+    // Dots for Game Copier (unchanged)
     let dots = [];
     let dotsAnim;
     const dotsCanvas = document.getElementById('dots-canvas');
@@ -335,7 +332,7 @@
 
     function initDots() {
       dots = [];
-      const num = Math.floor((dotsCanvas.width * dotsCanvas.height) / 12000); // nice subtle density
+      const num = Math.floor((dotsCanvas.width * dotsCanvas.height) / 12000);
       for(let i=0; i<num; i++){
         dots.push({
           x: Math.random() * dotsCanvas.width,
@@ -356,7 +353,6 @@
         d.y += d.vy;
         if (d.x < 0 || d.x > dotsCanvas.width) d.vx *= -1;
         if (d.y < 0 || d.y > dotsCanvas.height) d.vy *= -1;
-
         dotsCtx.beginPath();
         dotsCtx.arc(d.x, d.y, d.r, 0, Math.PI*2);
         dotsCtx.fillStyle = `rgba(255,255,255,${d.alpha})`;
@@ -365,7 +361,6 @@
       dotsAnim = requestAnimationFrame(animateDots);
     }
 
-    // Start on hub
     showSection('hub');
   </script>
 
