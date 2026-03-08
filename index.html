@@ -1,233 +1,131 @@
-<html lang="en"><head>
+<!DOCTYPE html>
+<html lang="en">
+<head>
 <meta charset="UTF-8">
 <title>HaychTools Hub</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-<link href="https://fonts.googleapis.com/css2?family=Rubik+Puddles&amp;family=Poppins:wght@300;500;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Rubik+Puddles&family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
 
 <style>
-
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  height:100vh;
+  background:#05060a;
+  font-family:'Poppins',sans-serif;
+  color:white;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
 }
-
-body{
-height:100vh;
-background:#05060a;
-font-family:'Poppins',sans-serif;
-color:white;
-display:flex;
-flex-direction:column;
-align-items:center;
-justify-content:center;
-overflow:hidden;
+#waves { position:fixed; top:0; left:0; width:100%; height:100%; z-index:-2; }
+#particles { position:fixed; top:0; left:0; z-index:-1; }
+h1 {
+  font-family:'Rubik Puddles',cursive;
+  font-size:70px;
+  margin-bottom:60px;
+  background:linear-gradient(90deg,#00f0ff,#00ff9d,#6a5cff);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  filter:drop-shadow(0 0 25px rgba(0,255,200,0.6));
 }
-
-/* wave canvas */
-
-#waves{
-position:fixed;
-top:0;
-left:0;
-width:100%;
-height:100%;
-z-index:-2;
+.container {
+  display:flex;
+  gap:30px;
+  flex-wrap:wrap;
+  justify-content:center;
 }
-
-/* particles */
-
-#particles{
-position:fixed;
-top:0;
-left:0;
-z-index:-1;
+.btn {
+  padding:18px 40px;
+  font-size:20px;
+  border-radius:12px;
+  border:none;
+  cursor:pointer;
+  color:white;
+  font-weight:600;
+  transition:0.35s;
 }
-
-/* title */
-
-h1{
-font-family:'Rubik Puddles',cursive;
-font-size:70px;
-margin-bottom:60px;
-background:linear-gradient(90deg,#00f0ff,#00ff9d,#6a5cff);
--webkit-background-clip:text;
--webkit-text-fill-color:transparent;
-filter:drop-shadow(0 0 25px rgba(0,255,200,0.6));
-}
-
-/* buttons */
-
-.container{
-display:flex;
-gap:30px;
-flex-wrap:wrap;
-justify-content:center;
-}
-
-.btn{
-padding:18px 40px;
-font-size:20px;
-border-radius:12px;
-border:none;
-cursor:pointer;
-color:white;
-font-weight:600;
-transition:0.35s;
-}
-
-.game{
-background:linear-gradient(135deg,#ff2e63,#ff6b6b);
-box-shadow:0 0 20px #ff2e63;
-}
-
-.clothes{
-background:linear-gradient(135deg,#00c853,#69f0ae);
-box-shadow:0 0 20px #00c853;
-}
-
-.bot{
-background:linear-gradient(135deg,#2979ff,#00b0ff);
-box-shadow:0 0 20px #2979ff;
-}
-
-.btn:hover{
-transform:scale(1.1);
-filter:brightness(1.2);
-}
-
+.game { background:linear-gradient(135deg,#ff2e63,#ff6b6b); box-shadow:0 0 20px #ff2e63; }
+.clothes { background:linear-gradient(135deg,#00c853,#69f0ae); box-shadow:0 0 20px #00c853; }
+.bot { background:linear-gradient(135deg,#2979ff,#00b0ff); box-shadow:0 0 20px #2979ff; }
+.btn:hover { transform:scale(1.1); filter:brightness(1.2); }
 </style>
 </head>
-
 <body>
 
-<canvas id="waves" width="980" height="1653"></canvas>
-<canvas id="particles" width="980" height="1653"></canvas>
+<canvas id="waves"></canvas>
+<canvas id="particles"></canvas>
 
-<h1>Haychtools Hub</h1>
+<h1>HaychTools Hub</h1>
 
 <div class="container">
-
-<button class="btn game" onclick="location.href='GameCopier/'">
-Game Copier
-</button>
-
-<button class="btn clothes" onclick="location.href='ClothesCopier/'">
-Clothes Copier
-</button>
-
-<button class="btn bot" onclick="location.href='BotFollower/'">
-Bot Follower
-</button>
-
+  <button class="btn game" onclick="location.href='GameCopier/'">Game Copier</button>
+  <button class="btn clothes" onclick="location.href='ClothesCopier/'">Clothes Copier</button>
+  <button class="btn bot" onclick="location.href='BotFollower/'">Bot Follower</button>
 </div>
 
 <script>
-
-/* WAVE BACKGROUND */
-
-const waveCanvas = document.getElementById("waves")
-const wctx = waveCanvas.getContext("2d")
-
-waveCanvas.width = window.innerWidth
-waveCanvas.height = window.innerHeight
-
-let t = 0
-
-function drawWaves(){
-
-wctx.clearRect(0,0,waveCanvas.width,waveCanvas.height)
-
-for(let j=0;j<3;j++){
-
-wctx.beginPath()
-
-for(let i=0;i<waveCanvas.width;i++){
-
-let y = Math.sin(i*0.01 + t + j)*40 + waveCanvas.height/2
-
-wctx.lineTo(i,y)
-
+// WAVE BACKGROUND
+const waveCanvas = document.getElementById("waves");
+const wctx = waveCanvas.getContext("2d");
+waveCanvas.width = window.innerWidth;
+waveCanvas.height = window.innerHeight;
+let t = 0;
+function drawWaves() {
+  wctx.clearRect(0,0,waveCanvas.width,waveCanvas.height);
+  for(let j=0;j<3;j++) {
+    wctx.beginPath();
+    for(let i=0;i<waveCanvas.width;i++) {
+      let y = Math.sin(i*0.01 + t + j)*40 + waveCanvas.height/2;
+      wctx.lineTo(i,y);
+    }
+    wctx.strokeStyle = `rgba(0,255,200,${0.2 + j*0.15})`;
+    wctx.lineWidth = 2;
+    wctx.stroke();
+  }
+  t += 0.02;
+  requestAnimationFrame(drawWaves);
 }
+drawWaves();
 
-wctx.strokeStyle = `rgba(0,255,200,${0.2 + j*0.15})`
-wctx.lineWidth = 2
-wctx.stroke()
-
+// PARTICLE MOUSE TRAIL
+const pCanvas = document.getElementById("particles");
+const pctx = pCanvas.getContext("2d");
+pCanvas.width = window.innerWidth;
+pCanvas.height = window.innerHeight;
+let particles = [];
+document.addEventListener("mousemove", e => {
+  for(let i=0;i<3;i++) {
+    particles.push({
+      x: e.x,
+      y: e.y,
+      size: Math.random()*4,
+      vx: (Math.random()-0.5)*2,
+      vy: (Math.random()-0.5)*2,
+      life: 80
+    });
+  }
+});
+function drawParticles() {
+  pctx.clearRect(0,0,pCanvas.width,pCanvas.height);
+  for(let i=particles.length-1; i>=0; i--) {
+    let p = particles[i];
+    pctx.fillStyle = "rgba(0,255,200,0.8)";
+    pctx.beginPath();
+    pctx.arc(p.x, p.y, p.size, 0, Math.PI*2);
+    pctx.fill();
+    p.x += p.vx;
+    p.y += p.vy;
+    p.life--;
+    if(p.life <= 0) particles.splice(i,1);
+  }
+  requestAnimationFrame(drawParticles);
 }
-
-t += 0.02
-
-requestAnimationFrame(drawWaves)
-
-}
-
-drawWaves()
-
-
-/* PARTICLE MOUSE TRAIL */
-
-const pCanvas = document.getElementById("particles")
-const pctx = pCanvas.getContext("2d")
-
-pCanvas.width = window.innerWidth
-pCanvas.height = window.innerHeight
-
-let particles = []
-
-document.addEventListener("mousemove",e=>{
-
-for(let i=0;i<3;i++){
-
-particles.push({
-x:e.x,
-y:e.y,
-size:Math.random()*4,
-vx:(Math.random()-0.5)*2,
-vy:(Math.random()-0.5)*2,
-life:80
-})
-
-}
-
-})
-
-function drawParticles(){
-
-pctx.clearRect(0,0,pCanvas.width,pCanvas.height)
-
-for(let i=0;i<particles.length;i++){
-
-let p = particles[i]
-
-pctx.fillStyle="rgba(0,255,200,0.8)"
-
-pctx.beginPath()
-pctx.arc(p.x,p.y,p.size,0,Math.PI*2)
-pctx.fill()
-
-p.x+=p.vx
-p.y+=p.vy
-p.life--
-
-if(p.life<=0){
-particles.splice(i,1)
-i--
-}
-
-}
-
-requestAnimationFrame(drawParticles)
-
-}
-
-drawParticles()
-
+drawParticles();
 </script>
-
-
-
-</body></html>
+</body>
+</html>
