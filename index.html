@@ -11,23 +11,23 @@
   <style>
     * { margin:0; padding:0; box-sizing:border-box; }
     body {
-      background:#000;
+      background:#05060a;
       color:#fff;
       font-family:'Poppins', sans-serif;
       min-height:100vh;
       overflow-x:hidden;
     }
 
-    /* Shared canvas for dots (used only on game section) */
-    #dots-canvas {
+    /* Canvases for hub animations */
+    #waves, #particles {
       position:fixed;
       top:0; left:0;
       width:100%; height:100%;
-      z-index:0;
-      pointer-events:none;
+      z-index:-2;
     }
+    #particles { z-index:-1; }
 
-    /* Hub screen - keep your original cyber look */
+    /* Hub - original cyber style */
     #hub {
       position:relative;
       z-index:1;
@@ -38,12 +38,11 @@
       justify-content:center;
       text-align:center;
       padding:20px;
-      background:#05060a;
     }
     #hub h1 {
       font-family:'Rubik Puddles',cursive;
       font-size:clamp(50px, 10vw, 80px);
-      margin-bottom:50px;
+      margin-bottom:60px;
       background:linear-gradient(90deg,#00f0ff,#00ff9d,#6a5cff);
       -webkit-background-clip:text;
       -webkit-text-fill-color:transparent;
@@ -68,38 +67,64 @@
     .game { background:linear-gradient(135deg,#ff2e63,#ff6b6b); box-shadow:0 0 20px #ff2e63; }
     .clothes { background:linear-gradient(135deg,#00c853,#69f0ae); box-shadow:0 0 20px #00c853; }
     .bot { background:linear-gradient(135deg,#2979ff,#00b0ff); box-shadow:0 0 20px #2979ff; }
-    .btn:hover { transform:scale(1.05); filter:brightness(1.15); }
+    .btn:hover { transform:scale(1.1); filter:brightness(1.2); }
 
-    /* Section - dark clean mode like your screenshot */
-    .section {
+    /* Dots canvas for Game Copier only */
+    #dots-canvas {
+      position:fixed;
+      top:0; left:0;
+      width:100%; height:100%;
+      z-index:0;
+      pointer-events:none;
+      display:none; /* hidden until game section */
+    }
+
+    /* Game Copier section - clean dark iOS vibe */
+    #game {
       display:none;
       position:relative;
       z-index:1;
       min-height:100vh;
-      padding:60px 20px;
+      padding:80px 20px 40px;
       text-align:center;
     }
-    .section .content {
-      max-width:500px;
-      margin:0 auto;
-      background:rgba(20,20,30,0.7);
-      backdrop-filter:blur(10px);
-      border-radius:24px;
-      padding:40px 30px;
-      border:1px solid rgba(255,255,255,0.08);
-      box-shadow:0 20px 60px rgba(0,0,0,0.6);
+    .back-btn {
+      position:absolute;
+      top:20px;
+      left:20px;
+      background:none;
+      border:none;
+      color:#4d9fff;
+      font-size:18px;
+      font-weight:500;
+      cursor:pointer;
+      display:flex;
+      align-items:center;
+      gap:8px;
+      z-index:2;
     }
-    .section h1 {
+    .back-btn::before { content:"←"; font-size:24px; }
+    .game-content {
+      max-width:520px;
+      margin:0 auto;
+      background:rgba(15,15,25,0.85);
+      backdrop-filter:blur(12px);
+      border-radius:28px;
+      padding:40px 28px;
+      border:1px solid rgba(255,255,255,0.06);
+      box-shadow:0 20px 80px rgba(0,0,0,0.7);
+    }
+    .game-content h1 {
       font-size:clamp(32px, 7vw, 44px);
       margin-bottom:24px;
       font-weight:600;
       color:#fff;
     }
-    .section p {
-      font-size:16px;
-      line-height:1.5;
+    .game-content p {
+      font-size:15px;
+      line-height:1.6;
       margin-bottom:32px;
-      color:#ccc;
+      color:#ddd;
     }
     .input-wrapper {
       margin:32px 0;
@@ -108,16 +133,16 @@
       width:100%;
       padding:18px 20px;
       font-size:16px;
-      background:rgba(40,40,50,0.8);
-      border:1px solid rgba(100,100,255,0.3);
-      border-radius:12px;
+      background:rgba(30,30,45,0.9);
+      border:1px solid rgba(77,159,255,0.4);
+      border-radius:14px;
       color:#fff;
       outline:none;
       transition:0.3s;
     }
     input[type="text"]:focus {
       border-color:#4d9fff;
-      box-shadow:0 0 0 3px rgba(77,159,255,0.2);
+      box-shadow:0 0 0 4px rgba(77,159,255,0.15);
     }
     .copy-btn {
       width:100%;
@@ -126,19 +151,18 @@
       font-weight:600;
       background:linear-gradient(135deg,#4d9fff,#2979ff);
       border:none;
-      border-radius:12px;
+      border-radius:14px;
       color:white;
       cursor:pointer;
       transition:0.3s;
-      box-shadow:0 8px 20px rgba(41,121,255,0.3);
+      box-shadow:0 8px 24px rgba(41,121,255,0.35);
     }
     .copy-btn:hover {
-      transform:translateY(-2px);
-      box-shadow:0 12px 30px rgba(41,121,255,0.5);
+      transform:translateY(-3px);
+      box-shadow:0 12px 32px rgba(41,121,255,0.5);
     }
     .tutorial {
       margin-top:48px;
-      text-align:center;
     }
     .tutorial h3 {
       font-size:20px;
@@ -149,9 +173,9 @@
       display:inline-flex;
       align-items:center;
       gap:12px;
-      padding:14px 28px;
-      background:rgba(255,255,255,0.08);
-      border:1px solid rgba(255,255,255,0.15);
+      padding:14px 32px;
+      background:rgba(255,255,255,0.07);
+      border:1px solid rgba(255,255,255,0.12);
       border-radius:50px;
       color:#fff;
       font-size:16px;
@@ -159,46 +183,28 @@
       transition:0.3s;
     }
     .tutorial-btn:hover {
-      background:rgba(255,255,255,0.15);
+      background:rgba(255,255,255,0.14);
     }
     .play-icon {
-      width:24px;
-      height:24px;
+      width:28px;
+      height:28px;
       background:#4d9fff;
       border-radius:50%;
       display:flex;
       align-items:center;
       justify-content:center;
-      font-size:14px;
+      font-size:16px;
       font-weight:bold;
-    }
-
-    .back-btn {
-      position:absolute;
-      top:20px;
-      left:20px;
-      background:none;
-      border:none;
-      color:#4d9fff;
-      font-size:18px;
-      cursor:pointer;
-      display:flex;
-      align-items:center;
-      gap:8px;
-      z-index:2;
-    }
-    .back-btn::before {
-      content:"←";
-      font-size:24px;
     }
   </style>
 </head>
 <body>
 
-  <!-- Dots canvas - only visible on game section -->
+  <canvas id="waves"></canvas>
+  <canvas id="particles"></canvas>
   <canvas id="dots-canvas"></canvas>
 
-  <!-- Hub -->
+  <!-- Hub - original flashy design -->
   <div id="hub">
     <h1>HaychTools Hub</h1>
     <div class="container">
@@ -208,11 +214,10 @@
     </div>
   </div>
 
-  <!-- Game Copier Section -->
+  <!-- Game Copier - your requested dark clean design -->
   <div id="game" class="section">
     <button class="back-btn" onclick="showSection('hub')">Back</button>
-
-    <div class="content">
+    <div class="game-content">
       <h1>Copy Games</h1>
       <p>Paste your game file in the box below, then click "Copy Game!" If you don't know how to find a games "game file" then go ahead and watch "How to use"</p>
 
@@ -232,21 +237,17 @@
     </div>
   </div>
 
-  <!-- Placeholder sections for others (add your own later) -->
+  <!-- Placeholder for other sections -->
   <div id="clothes" class="section" style="display:none;">
     <button class="back-btn" onclick="showSection('hub')">Back</button>
-    <div class="content">
-      <h1>Clothes Copier</h1>
-      <p>Coming soon - drop your logic here.</p>
-    </div>
+    <h1>Clothes Copier</h1>
+    <p>Ready when you are - drop the real juice here.</p>
   </div>
 
   <div id="bot" class="section" style="display:none;">
     <button class="back-btn" onclick="showSection('hub')">Back</button>
-    <div class="content">
-      <h1>Bot Follower</h1>
-      <p>Coming soon - bot juice incoming.</p>
-    </div>
+    <h1>Bot Follower</h1>
+    <p>Bot setup incoming - tell me what you need.</p>
   </div>
 
   <script>
@@ -254,66 +255,115 @@
       document.querySelectorAll('#hub, .section').forEach(el => el.style.display = 'none');
       document.getElementById(id).style.display = 'block';
 
-      // Start/stop dots animation only on game section
-      if (id === 'game') {
-        initDots();
-      } else {
-        // Stop animation if switching away (optional optimization)
-        cancelAnimationFrame(dotsAnim);
-      }
+      // Dots only on game section
+      document.getElementById('dots-canvas').style.display = (id === 'game') ? 'block' : 'none';
+      if (id === 'game') initDots();
 
       window.scrollTo(0, 0);
     }
 
-    // Random white dots background (stars/snow vibe)
+    // Original hub wave animation
+    const waveCanvas = document.getElementById("waves");
+    const wctx = waveCanvas.getContext("2d");
+    waveCanvas.width = window.innerWidth;
+    waveCanvas.height = window.innerHeight;
+    let t = 0;
+    function drawWaves() {
+      wctx.clearRect(0,0,waveCanvas.width,waveCanvas.height);
+      for(let j=0;j<3;j++){
+        wctx.beginPath();
+        for(let i=0;i<waveCanvas.width;i++){
+          let y = Math.sin(i*0.01 + t + j)*40 + waveCanvas.height/2;
+          wctx.lineTo(i,y);
+        }
+        wctx.strokeStyle = `rgba(0,255,200,${0.2 + j*0.15})`;
+        wctx.lineWidth = 2;
+        wctx.stroke();
+      }
+      t += 0.02;
+      requestAnimationFrame(drawWaves);
+    }
+    drawWaves();
+
+    // Original hub particle trail
+    const pCanvas = document.getElementById("particles");
+    const pctx = pCanvas.getContext("2d");
+    pCanvas.width = window.innerWidth;
+    pCanvas.height = window.innerHeight;
+    let particles = [];
+    document.addEventListener("mousemove", e => {
+      for(let i=0;i<3;i++){
+        particles.push({
+          x:e.clientX,
+          y:e.clientY,
+          size:Math.random()*4,
+          vx:(Math.random()-0.5)*2,
+          vy:(Math.random()-0.5)*2,
+          life:80
+        });
+      }
+    });
+    function drawParticles() {
+      pctx.clearRect(0,0,pCanvas.width,pCanvas.height);
+      for(let i=particles.length-1;i>=0;i--){
+        let p = particles[i];
+        pctx.fillStyle="rgba(0,255,200,0.8)";
+        pctx.beginPath();
+        pctx.arc(p.x,p.y,p.size,0,Math.PI*2);
+        pctx.fill();
+        p.x+=p.vx;
+        p.y+=p.vy;
+        p.life--;
+        if(p.life<=0) particles.splice(i,1);
+      }
+      requestAnimationFrame(drawParticles);
+    }
+    drawParticles();
+
+    // White dots for Game Copier
     let dots = [];
     let dotsAnim;
-    const canvas = document.getElementById('dots-canvas');
-    const ctx = canvas.getContext('2d');
+    const dotsCanvas = document.getElementById('dots-canvas');
+    const dotsCtx = dotsCanvas.getContext('2d');
 
-    function resizeCanvas() {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
+    function resizeDots() {
+      dotsCanvas.width = window.innerWidth;
+      dotsCanvas.height = window.innerHeight;
     }
-    resizeCanvas();
-    window.addEventListener('resize', resizeCanvas);
+    resizeDots();
+    window.addEventListener('resize', resizeDots);
 
     function initDots() {
       dots = [];
-      const count = Math.floor((canvas.width * canvas.height) / 15000); // ~nice density
-      for (let i = 0; i < count; i++) {
+      const num = Math.floor((dotsCanvas.width * dotsCanvas.height) / 12000); // nice subtle density
+      for(let i=0; i<num; i++){
         dots.push({
-          x: Math.random() * canvas.width,
-          y: Math.random() * canvas.height,
-          radius: Math.random() * 1.5 + 0.5,
-          vx: (Math.random() - 0.5) * 0.3,
-          vy: (Math.random() - 0.5) * 0.3,
-          alpha: Math.random() * 0.5 + 0.3
+          x: Math.random() * dotsCanvas.width,
+          y: Math.random() * dotsCanvas.height,
+          r: Math.random() * 1.8 + 0.4,
+          vx: (Math.random() - 0.5) * 0.4,
+          vy: (Math.random() - 0.5) * 0.4,
+          alpha: Math.random() * 0.4 + 0.4
         });
       }
       animateDots();
     }
 
     function animateDots() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      dots.forEach(dot => {
-        dot.x += dot.vx;
-        dot.y += dot.vy;
+      dotsCtx.clearRect(0, 0, dotsCanvas.width, dotsCanvas.height);
+      dots.forEach(d => {
+        d.x += d.vx;
+        d.y += d.vy;
+        if (d.x < 0 || d.x > dotsCanvas.width) d.vx *= -1;
+        if (d.y < 0 || d.y > dotsCanvas.height) d.vy *= -1;
 
-        // Gentle bounce off edges
-        if (dot.x < 0 || dot.x > canvas.width) dot.vx *= -1;
-        if (dot.y < 0 || dot.y > canvas.height) dot.vy *= -1;
-
-        ctx.beginPath();
-        ctx.arc(dot.x, dot.y, dot.radius, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(255,255,255,${dot.alpha})`;
-        ctx.fill();
+        dotsCtx.beginPath();
+        dotsCtx.arc(d.x, d.y, d.r, 0, Math.PI*2);
+        dotsCtx.fillStyle = `rgba(255,255,255,${d.alpha})`;
+        dotsCtx.fill();
       });
       dotsAnim = requestAnimationFrame(animateDots);
     }
-
-    // Hub wave/particle code if you still want it on hub (optional - removed for clean dark mode, but can add back)
-    // ... paste your original wave + mouse particles here if you miss them on hub
 
     // Start on hub
     showSection('hub');
