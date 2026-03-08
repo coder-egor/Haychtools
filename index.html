@@ -1,131 +1,277 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>HaychTools Hub</title>
+  <meta charset="UTF-8">
+  <title>HaychTools Hub</title>
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Rubik+Puddles&family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
 
-<link href="https://fonts.googleapis.com/css2?family=Rubik+Puddles&family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      height:100vh;
+      background:#05060a;
+      font-family:'Poppins',sans-serif;
+      color:white;
+      overflow-x:hidden;
+    }
+    #waves, #particles {
+      position:fixed;
+      top:0; left:0;
+      width:100%; height:100%;
+      z-index:-2;
+    }
+    #particles { z-index:-1; }
+    .hub {
+      position:relative;
+      z-index:1;
+      height:100vh;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      text-align:center;
+      padding:20px;
+    }
+    h1 {
+      font-family:'Rubik Puddles',cursive;
+      font-size:clamp(50px, 10vw, 80px);
+      margin-bottom:50px;
+      background:linear-gradient(90deg,#00f0ff,#00ff9d,#6a5cff);
+      -webkit-background-clip:text;
+      -webkit-text-fill-color:transparent;
+      filter:drop-shadow(0 0 25px rgba(0,255,200,0.6));
+    }
+    .container {
+      display:flex;
+      gap:30px;
+      flex-wrap:wrap;
+      justify-content:center;
+    }
+    .btn {
+      padding:18px 40px;
+      font-size:20px;
+      border-radius:12px;
+      border:none;
+      cursor:pointer;
+      color:white;
+      font-weight:600;
+      transition:0.35s;
+    }
+    .game { background:linear-gradient(135deg,#ff2e63,#ff6b6b); box-shadow:0 0 20px #ff2e63; }
+    .clothes { background:linear-gradient(135deg,#00c853,#69f0ae); box-shadow:0 0 20px #00c853; }
+    .bot { background:linear-gradient(135deg,#2979ff,#00b0ff); box-shadow:0 0 20px #2979ff; }
+    .btn:hover { transform:scale(1.1); filter:brightness(1.2); }
 
-<style>
-* { margin:0; padding:0; box-sizing:border-box; }
-body {
-  height:100vh;
-  background:#05060a;
-  font-family:'Poppins',sans-serif;
-  color:white;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  overflow:hidden;
-}
-#waves { position:fixed; top:0; left:0; width:100%; height:100%; z-index:-2; }
-#particles { position:fixed; top:0; left:0; z-index:-1; }
-h1 {
-  font-family:'Rubik Puddles',cursive;
-  font-size:70px;
-  margin-bottom:60px;
-  background:linear-gradient(90deg,#00f0ff,#00ff9d,#6a5cff);
-  -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;
-  filter:drop-shadow(0 0 25px rgba(0,255,200,0.6));
-}
-.container {
-  display:flex;
-  gap:30px;
-  flex-wrap:wrap;
-  justify-content:center;
-}
-.btn {
-  padding:18px 40px;
-  font-size:20px;
-  border-radius:12px;
-  border:none;
-  cursor:pointer;
-  color:white;
-  font-weight:600;
-  transition:0.35s;
-}
-.game { background:linear-gradient(135deg,#ff2e63,#ff6b6b); box-shadow:0 0 20px #ff2e63; }
-.clothes { background:linear-gradient(135deg,#00c853,#69f0ae); box-shadow:0 0 20px #00c853; }
-.bot { background:linear-gradient(135deg,#2979ff,#00b0ff); box-shadow:0 0 20px #2979ff; }
-.btn:hover { transform:scale(1.1); filter:brightness(1.2); }
-</style>
+    /* Section styles */
+    .section {
+      display:none;
+      position:relative;
+      z-index:1;
+      padding:60px 20px 100px;
+      min-height:100vh;
+      text-align:center;
+    }
+    .section h1 {
+      font-size:clamp(40px, 8vw, 60px);
+      margin-bottom:40px;
+    }
+    .input-box {
+      width:100%;
+      max-width:800px;
+      margin:0 auto 60px;
+    }
+    input[type="file"] {
+      width:100%;
+      padding:20px;
+      font-size:18px;
+      background:rgba(255,255,255,0.08);
+      border:2px solid currentColor;
+      border-radius:12px;
+      color:white;
+      cursor:pointer;
+    }
+    input[type="file"]::file-selector-button {
+      padding:14px 30px;
+      background:currentColor;
+      border:none;
+      border-radius:8px;
+      color:#05060a;
+      font-weight:bold;
+      cursor:pointer;
+      margin-right:15px;
+    }
+    .tutorial {
+      width:100%;
+      max-width:700px;
+      margin:0 auto;
+      background:rgba(0,0,0,0.4);
+      padding:25px;
+      border-radius:16px;
+      box-shadow:0 0 30px rgba(255,255,255,0.1);
+    }
+    .tutorial h2 {
+      margin-bottom:20px;
+      font-size:28px;
+    }
+    iframe {
+      width:100%;
+      height:400px; /* square-ish feel, adjust if needed */
+      border:none;
+      border-radius:12px;
+      box-shadow:0 0 20px rgba(0,0,0,0.6);
+    }
+    .back-btn {
+      margin-top:60px;
+      padding:16px 40px;
+      font-size:18px;
+      background:linear-gradient(135deg,#00f0ff,#00ff9d);
+      border:none;
+      border-radius:12px;
+      color:#000;
+      font-weight:bold;
+      cursor:pointer;
+    }
+  </style>
 </head>
 <body>
 
-<canvas id="waves"></canvas>
-<canvas id="particles"></canvas>
+  <canvas id="waves"></canvas>
+  <canvas id="particles"></canvas>
 
-<h1>HaychTools Hub</h1>
+  <!-- Hub Screen -->
+  <div id="hub" class="hub">
+    <h1>HaychTools Hub</h1>
+    <div class="container">
+      <button class="btn game" onclick="showSection('game')">Game Copier</button>
+      <button class="btn clothes" onclick="showSection('clothes')">Clothes Copier</button>
+      <button class="btn bot" onclick="showSection('bot')">Bot Follower</button>
+    </div>
+  </div>
 
-<div class="container">
-  <button class="btn game" onclick="location.href='GameCopier/'">Game Copier</button>
-  <button class="btn clothes" onclick="location.href='ClothesCopier/'">Clothes Copier</button>
-  <button class="btn bot" onclick="location.href='BotFollower/'">Bot Follower</button>
-</div>
+  <!-- Game Copier Section -->
+  <div id="game" class="section" style="color:#ff2e63;">
+    <h1>Game Copier</h1>
+    <div class="input-box">
+      <input type="file" id="gameFile" accept=".rbxl,.rbxlx" />
+    </div>
+    <div class="tutorial">
+      <h2>Tutorial</h2>
+      <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" 
+              title="Tutorial Video" 
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+              allowfullscreen></iframe>
+      <!-- Swap src with your real tutorial embed link -->
+    </div>
+    <button class="back-btn" onclick="showSection('hub')">Back to Hub</button>
+  </div>
 
-<script>
-// WAVE BACKGROUND
-const waveCanvas = document.getElementById("waves");
-const wctx = waveCanvas.getContext("2d");
-waveCanvas.width = window.innerWidth;
-waveCanvas.height = window.innerHeight;
-let t = 0;
-function drawWaves() {
-  wctx.clearRect(0,0,waveCanvas.width,waveCanvas.height);
-  for(let j=0;j<3;j++) {
-    wctx.beginPath();
-    for(let i=0;i<waveCanvas.width;i++) {
-      let y = Math.sin(i*0.01 + t + j)*40 + waveCanvas.height/2;
-      wctx.lineTo(i,y);
+  <!-- Clothes Copier Section (placeholder - customize) -->
+  <div id="clothes" class="section" style="color:#00c853;">
+    <h1>Clothes Copier</h1>
+    <div class="input-box">
+      <input type="file" id="clothesFile" accept=".png,.jpg" />
+    </div>
+    <div class="tutorial">
+      <h2>Tutorial</h2>
+      <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" 
+              title="Tutorial Video" 
+              allowfullscreen></iframe>
+    </div>
+    <button class="back-btn" onclick="showSection('hub')">Back to Hub</button>
+  </div>
+
+  <!-- Bot Follower Section (placeholder - customize) -->
+  <div id="bot" class="section" style="color:#2979ff;">
+    <h1>Bot Follower</h1>
+    <div class="input-box">
+      <input type="text" placeholder="Enter username or ID" style="padding:20px; font-size:18px; width:100%; max-width:600px; background:rgba(255,255,255,0.08); border:2px solid currentColor; border-radius:12px; color:white;" />
+    </div>
+    <div class="tutorial">
+      <h2>Tutorial</h2>
+      <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" 
+              title="Tutorial Video" 
+              allowfullscreen></iframe>
+    </div>
+    <button class="back-btn" onclick="showSection('hub')">Back to Hub</button>
+  </div>
+
+  <script>
+    // Show/hide sections
+    function showSection(id) {
+      document.querySelectorAll('.hub, .section').forEach(el => el.style.display = 'none');
+      document.getElementById(id).style.display = 'flex';  // hub uses flex, sections can too
+      window.scrollTo(0, 0); // reset scroll
     }
-    wctx.strokeStyle = `rgba(0,255,200,${0.2 + j*0.15})`;
-    wctx.lineWidth = 2;
-    wctx.stroke();
-  }
-  t += 0.02;
-  requestAnimationFrame(drawWaves);
-}
-drawWaves();
 
-// PARTICLE MOUSE TRAIL
-const pCanvas = document.getElementById("particles");
-const pctx = pCanvas.getContext("2d");
-pCanvas.width = window.innerWidth;
-pCanvas.height = window.innerHeight;
-let particles = [];
-document.addEventListener("mousemove", e => {
-  for(let i=0;i<3;i++) {
-    particles.push({
-      x: e.x,
-      y: e.y,
-      size: Math.random()*4,
-      vx: (Math.random()-0.5)*2,
-      vy: (Math.random()-0.5)*2,
-      life: 80
+    // WAVE BACKGROUND
+    const waveCanvas = document.getElementById("waves");
+    const wctx = waveCanvas.getContext("2d");
+    waveCanvas.width = window.innerWidth;
+    waveCanvas.height = window.innerHeight;
+    let t = 0;
+    function drawWaves() {
+      wctx.clearRect(0,0,waveCanvas.width,waveCanvas.height);
+      for(let j=0; j<3; j++) {
+        wctx.beginPath();
+        for(let i=0; i<waveCanvas.width; i++) {
+          let y = Math.sin(i*0.01 + t + j)*40 + waveCanvas.height/2;
+          wctx.lineTo(i, y);
+        }
+        wctx.strokeStyle = `rgba(0,255,200,${0.2 + j*0.15})`;
+        wctx.lineWidth = 2;
+        wctx.stroke();
+      }
+      t += 0.02;
+      requestAnimationFrame(drawWaves);
+    }
+    drawWaves();
+
+    // PARTICLE MOUSE TRAIL
+    const pCanvas = document.getElementById("particles");
+    const pctx = pCanvas.getContext("2d");
+    pCanvas.width = window.innerWidth;
+    pCanvas.height = window.innerHeight;
+    let particles = [];
+    document.addEventListener("mousemove", e => {
+      for(let i=0; i<3; i++) {
+        particles.push({
+          x: e.clientX,
+          y: e.clientY,
+          size: Math.random()*4,
+          vx: (Math.random()-0.5)*2,
+          vy: (Math.random()-0.5)*2,
+          life: 80
+        });
+      }
     });
-  }
-});
-function drawParticles() {
-  pctx.clearRect(0,0,pCanvas.width,pCanvas.height);
-  for(let i=particles.length-1; i>=0; i--) {
-    let p = particles[i];
-    pctx.fillStyle = "rgba(0,255,200,0.8)";
-    pctx.beginPath();
-    pctx.arc(p.x, p.y, p.size, 0, Math.PI*2);
-    pctx.fill();
-    p.x += p.vx;
-    p.y += p.vy;
-    p.life--;
-    if(p.life <= 0) particles.splice(i,1);
-  }
-  requestAnimationFrame(drawParticles);
-}
-drawParticles();
-</script>
+    function drawParticles() {
+      pctx.clearRect(0,0,pCanvas.width,pCanvas.height);
+      for(let i=particles.length-1; i>=0; i--) {
+        let p = particles[i];
+        pctx.fillStyle = "rgba(0,255,200,0.8)";
+        pctx.beginPath();
+        pctx.arc(p.x, p.y, p.size, 0, Math.PI*2);
+        pctx.fill();
+        p.x += p.vx;
+        p.y += p.vy;
+        p.life--;
+        if(p.life <= 0) particles.splice(i,1);
+      }
+      requestAnimationFrame(drawParticles);
+    }
+    drawParticles();
+
+    // Resize canvases on window resize
+    window.addEventListener('resize', () => {
+      waveCanvas.width = window.innerWidth;
+      waveCanvas.height = window.innerHeight;
+      pCanvas.width = window.innerWidth;
+      pCanvas.height = window.innerHeight;
+    });
+  </script>
+
 </body>
 </html>
